@@ -210,8 +210,7 @@ objects:
       name: prometheus
     name: prometheus
   spec:
-    host: vm-48-125.eng.lab.tlv.redhat.com
-    path: "/graph"
+    host: metrics-vm-48-125.eng.lab.tlv.redhat.com
     port:
       targetPort: prometheus
     to:
@@ -229,7 +228,7 @@ objects:
       name: alertmanager
     name: alertmanager
   spec:
-    host: vm-48-125.eng.lab.tlv.redhat.com
+    host: alerts-vm-48-125.eng.lab.tlv.redhat.com
     port:
       targetPort: alertmanager
     to:
