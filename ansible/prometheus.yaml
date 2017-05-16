@@ -53,7 +53,7 @@ objects:
       protocol: TCP
       targetPort: 9093
     selector:
-      app: alertmanager
+      app: prometheus
 - apiVersion: extensions/v1beta1
   kind: Deployment
   metadata:
@@ -74,68 +74,48 @@ objects:
       spec:
         serviceAccountName: prometheus
         containers:
-        - args:
+        - name: prometheus
+          image: prom/prometheus
+          args:
           - -alertmanager.url=http://alertmanager:9093/
           - -storage.local.retention=6h
-          - -storage.local.memory-chunks=500000
           - -config.file=/etc/prometheus/prometheus.yml
-          image: prom/prometheus
           imagePullPolicy: IfNotPresent
-          name: prometheus
+          ports:
+          - containerPort: 9090
+            name: web
           volumeMounts:
           - mountPath: /etc/prometheus
-            name: config-volume
+            name: prometheus-config
           - mountPath: /prometheus
-            name: data-volume
-        restartPolicy: Always
-        volumes:
-        - configMap:
-            defaultMode: 420
-            name: prometheus
-          name: config-volume
-        - emptyDir: {}
-          name: data-volume
-- apiVersion: extensions/v1beta1
-  kind: Deployment
-  metadata:
-    labels:
-      app: alertmanager
-    name: alertmanager
-    namespace: "${NAMESPACE}"
-  spec:
-    replicas: 1
-    selector:
-      matchLabels:
-        app: alertmanager
-    template:
-      metadata:
-        labels:
-          app: alertmanager
-        name: alertmanager
-      spec:
-        serviceAccountName: prometheus
-        containers:
-        - args:
-          - -config.file=/etc/alertmanager/alertmanager.yaml
+            name: prometheus-data
+        - name: alertmanager
           image: quay.io/prometheus/alertmanager
+          args:
+          - -config.file=/etc/alertmanager/alertmanager.yaml
           imagePullPolicy: IfNotPresent
-          name: alertmanager
           ports:
           - containerPort: 9093
             name: web
           volumeMounts:
           - mountPath: /etc/alertmanager
-            name: config-volume
+            name: alertmanager-config
           - mountPath: /alertmanager
-            name: data-volume
+            name: alertmanager-data
         restartPolicy: Always
         volumes:
         - configMap:
             defaultMode: 420
+            name: prometheus
+          name: prometheus-config
+        - configMap:
+            defaultMode: 420
             name: alertmanager
-          name: config-volume
+          name: alertmanager-config
         - emptyDir: {}
-          name: data-volume
+          name: prometheus-data
+        - emptyDir: {}
+          name: alertmanager-data
 - apiVersion: v1
   kind: ConfigMap
   metadata:

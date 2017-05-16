@@ -6,7 +6,6 @@ oc delete service prometheus
 oc delete service alertmanager
 
 oc delete deployment prometheus
-oc delete deployment alertmanager
 
 oc delete configmap prometheus
 oc delete configmap alertmanager
