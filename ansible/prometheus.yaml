@@ -54,6 +54,23 @@ objects:
       targetPort: 9093
     selector:
       app: prometheus
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      prometheus.io/scrape: "true"
+    labels:
+      name: pushgateway
+    name: pushgateway
+    namespace: "${NAMESPACE}"
+  spec:
+    ports:
+    - name: pushgateway
+      port: 9091
+      protocol: TCP
+      targetPort: 9091
+    selector:
+      app: prometheus
 - apiVersion: extensions/v1beta1
   kind: Deployment
   metadata:
@@ -74,6 +91,17 @@ objects:
       spec:
         serviceAccountName: prometheus
         containers:
+        - name: pushgateway
+          image: prom/pushgateway
+          args:
+          - -persistence.file=/
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+          - mountPath: /etc/pushgateway
+            name: pushgatewat-data
+          ports:
+          - containerPort: 9091
+            name: pushgateway
         - name: prometheus
           image: prom/prometheus
           args:
@@ -116,6 +144,8 @@ objects:
           name: prometheus-data
         - emptyDir: {}
           name: alertmanager-data
+        - emptyDir: {}
+          name: pushgatewat-data
 - apiVersion: v1
   kind: ConfigMap
   metadata:
@@ -144,12 +174,11 @@ objects:
     namespace: "${NAMESPACE}"
   data:
     prometheus.rules: |
-      ALERT SecretRequestsHigh
-        IF sum(apiserver_request_count{resource="secrets"}) > 10
-        FOR 1s
+      ALERT Testing
+        IF process_cpu_seconds_total{instance="vm-48-124.eng.lab.tlv.redhat.com",job="kubernetes-nodes"} < 4615
         ANNOTATIONS {
-          summary = "lots of requests for secrets. strange???",
-          description = "",
+          summary = "a summary",
+          description = "a description",
         }
     prometheus.yml: |
       rule_files:
@@ -225,5 +254,23 @@ objects:
     to:
       kind: Service
       name: alertmanager
+      weight: 100
+    wildcardPolicy: None
+- apiVersion: v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/host.generated: "true"
+    creationTimestamp: null
+    labels:
+      name: pushgateway
+    name: pushgateway
+  spec:
+    host: pushgateway-vm-48-125.eng.lab.tlv.redhat.com
+    port:
+      targetPort: pushgateway
+    to:
+      kind: Service
+      name: pushgateway
       weight: 100
     wildcardPolicy: None
