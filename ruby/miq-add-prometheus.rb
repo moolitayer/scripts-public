@@ -16,7 +16,7 @@ prov = provider_class.new(
                                                         :port       => 443,
                                                         :verify_ssl => false},
                                     :authentication => {:role     => :default,
-                                                        :auth_key => ''}}]
+                                                        :auth_key => 'something'}}]
 )
 prov.save
 prov.authentication_check_types(:default)

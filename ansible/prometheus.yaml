@@ -175,7 +175,7 @@ objects:
   data:
     prometheus.rules: |
       ALERT Testing
-        IF process_cpu_seconds_total{instance="vm-48-124.eng.lab.tlv.redhat.com",job="kubernetes-nodes"} < 4615
+        IF process_cpu_seconds_total{instance="vm-48-124.eng.lab.tlv.redhat.com",job="kubernetes-nodes"} < 5609
         ANNOTATIONS {
           summary = "a summary",
           description = "a description",
