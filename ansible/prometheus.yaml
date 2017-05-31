@@ -175,7 +175,7 @@ objects:
   data:
     prometheus.rules: |
       ALERT Testing
-        IF process_cpu_seconds_total{instance="vm-48-124.eng.lab.tlv.redhat.com",job="kubernetes-nodes"} < 5609
+        IF container_fs_usage_bytes{container_name="",instance="yzamir-centos7-4.eng.lab.tlv.redhat.com",device="/dev/mapper/vg0-lv_root"} < 19000000000
         ANNOTATIONS {
           summary = "a summary",
           description = "a description",
@@ -230,7 +230,7 @@ objects:
       name: prometheus
     name: prometheus
   spec:
-    host: metrics-vm-48-125.eng.lab.tlv.redhat.com
+    host: metrics-yzamir-centos7-4.eng.lab.tlv.redhat.com
     port:
       targetPort: prometheus
     to:
@@ -248,7 +248,7 @@ objects:
       name: alertmanager
     name: alertmanager
   spec:
-    host: alerts-vm-48-125.eng.lab.tlv.redhat.com
+    host: alerts-yzamir-centos7-4.eng.lab.tlv.redhat.com
     port:
       targetPort: alertmanager
     to:
@@ -266,7 +266,7 @@ objects:
       name: pushgateway
     name: pushgateway
   spec:
-    host: pushgateway-vm-48-125.eng.lab.tlv.redhat.com
+    host: pushgateway-zamir-centos7-4.eng.lab.tlv.redhat.com
     port:
       targetPort: pushgateway
     to:
