@@ -175,7 +175,7 @@ objects:
   data:
     prometheus.rules: |
       ALERT Testing
-        IF container_fs_usage_bytes{container_name="",instance="yzamir-centos7-4.eng.lab.tlv.redhat.com",device="/dev/mapper/vg0-lv_root"} < 19000000000
+        IF container_fs_usage_bytes{container_name="",instance="vm-48-45.eng.lab.tlv.redhat.com",device="/dev/mapper/vg0-lv_root"} > 4000000000
         ANNOTATIONS {
           summary = "a summary",
           description = "a description",
@@ -230,7 +230,7 @@ objects:
       name: prometheus
     name: prometheus
   spec:
-    host: metrics-yzamir-centos7-4.eng.lab.tlv.redhat.com
+    host: metrics-vm-48-45.eng.lab.tlv.redhat.com
     port:
       targetPort: prometheus
     to:
@@ -248,7 +248,7 @@ objects:
       name: alertmanager
     name: alertmanager
   spec:
-    host: alerts-yzamir-centos7-4.eng.lab.tlv.redhat.com
+    host: alerts-vm-48-45.eng.lab.tlv.redhat.com
     port:
       targetPort: alertmanager
     to:
