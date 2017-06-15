@@ -1,3 +1,5 @@
+exit -1
+
 MIQ_PATH=${PREFIX}/manageiq
 PLUGIN_PATH=${MIQ_PATH}/plugins
 
