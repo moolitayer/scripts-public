@@ -57,20 +57,18 @@ objects:
 - apiVersion: v1
   kind: Service
   metadata:
-    annotations:
-      prometheus.io/scrape: "true"
     labels:
-      name: pushgateway
-    name: pushgateway
+      name: message-buffer
+    name: message-buffer
     namespace: "${NAMESPACE}"
   spec:
     ports:
-    - name: pushgateway
-      port: 9091
+    - name: message-buffer
+      port: 9099
       protocol: TCP
-      targetPort: 9091
+      targetPort: 9099
     selector:
-      app: prometheus
+      app: message-buffer
 - apiVersion: extensions/v1beta1
   kind: Deployment
   metadata:
@@ -91,17 +89,16 @@ objects:
       spec:
         serviceAccountName: prometheus
         containers:
-        - name: pushgateway
-          image: prom/pushgateway
-          args:
-          - -persistence.file=/
+        - name: message-buffer
+          image: management-infra/message-buffer
           imagePullPolicy: IfNotPresent
           volumeMounts:
-          - mountPath: /etc/pushgateway
-            name: pushgatewat-data
+          - mountPath: /message-buffer
+            name: message-buffer-data
+            #TODO: add -listen-address= arg
           ports:
-          - containerPort: 9091
-            name: pushgateway
+          - containerPort: 9099
+            name: message-buf
         - name: prometheus
           image: prom/prometheus
           args:
@@ -145,7 +142,7 @@ objects:
         - emptyDir: {}
           name: alertmanager-data
         - emptyDir: {}
-          name: pushgatewat-data
+          name: message-buffer-data #TODO: make persistent
 - apiVersion: v1
   kind: ConfigMap
   metadata:
@@ -154,19 +151,50 @@ objects:
   data:
     alertmanager.yaml: |
       global:
-        hipchat_auth_token: E77DVnSNpdFmApVtAgaAUtLdbhFRWWdli3kmOcoE
-        hipchat_url: 'https://prometheus-openshift-demo.hipchat.com/'
 
+      # The root route on which each incoming alert enters.
       route:
-        receiver: team-X-hipchat
+        # default route if none match
+        receiver: 'message-buffer-wh'
+
+        # The labels by which incoming alerts are grouped together. For example,
+        # multiple alerts coming in for cluster=A and alertname=LatencyHigh would
+        # be batched into a single group.
+        # TODO:
+        group_by: []
+
+        # When a new group of alerts is created by an incoming alert, wait at
+        # least 'group_wait' to send the initial notification.
+        # This way ensures that you get multiple alerts for the same group that start
+        # firing shortly after another are batched together on the first
+        # notification.
+        group_wait: 30s
+
+        # When the first notification was sent, wait 'group_interval' to send a batch
+        # of new alerts that started firing for that group.
+        group_interval: 5m
+
+        # If an alert has successfully been sent, wait 'repeat_interval' to
+        # resend them.
+        repeat_interval: 3h
+
+        # All the above attributes are inherited by all child routes and can
+        # overwritten on each.
+
+        # The child route trees.
+        routes:
+        # This routes performs a regular expression match on alert labels to
+        # catch alerts that are related to a list of services.
+        - match_re:
+            job: *
+          continue: true
+          receiver: message-buffer-wh
+
 
       receivers:
-      - name: 'team-X-hipchat'
-        hipchat_configs:
-        - auth_token: E77DVnSNpdFmApVtAgaAUtLdbhFRWWdli3kmOcoE
-          room_id: 3784528
-          message_format: html
-          notify: true
+      - name: 'message-buffer-wh'
+        webhook_config:
+        - url: http://localhost:9099
 - apiVersion: v1
   kind: ConfigMap
   metadata:
@@ -263,14 +291,14 @@ objects:
       openshift.io/host.generated: "true"
     creationTimestamp: null
     labels:
-      name: pushgateway
-    name: pushgateway
+      name: message-buffer
+    name: message-buffer
   spec:
-    host: pushgateway-zamir-centos7-4.eng.lab.tlv.redhat.com
+    host: message-buffer-vm-48-45.eng.lab.tlv.redhat.com
     port:
-      targetPort: pushgateway
+      targetPort: message-buf
     to:
       kind: Service
-      name: pushgateway
+      name: message-buffer
       weight: 100
     wildcardPolicy: None
