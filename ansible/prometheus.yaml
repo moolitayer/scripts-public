@@ -155,7 +155,7 @@ objects:
       # The root route on which each incoming alert enters.
       route:
         # default route if none match
-        receiver: 'message-buffer-wh'
+        receiver: message-buffer-wh
 
         # The labels by which incoming alerts are grouped together. For example,
         # multiple alerts coming in for cluster=A and alertname=LatencyHigh would
@@ -163,36 +163,12 @@ objects:
         # TODO:
         group_by: []
 
-        # When a new group of alerts is created by an incoming alert, wait at
-        # least 'group_wait' to send the initial notification.
-        # This way ensures that you get multiple alerts for the same group that start
-        # firing shortly after another are batched together on the first
-        # notification.
-        group_wait: 30s
-
-        # When the first notification was sent, wait 'group_interval' to send a batch
-        # of new alerts that started firing for that group.
-        group_interval: 5m
-
-        # If an alert has successfully been sent, wait 'repeat_interval' to
-        # resend them.
-        repeat_interval: 3h
-
         # All the above attributes are inherited by all child routes and can
         # overwritten on each.
 
-        # The child route trees.
-        routes:
-        # This routes performs a regular expression match on alert labels to
-        # catch alerts that are related to a list of services.
-        - match_re:
-            job: *
-          continue: true
-          receiver: message-buffer-wh
-
 
       receivers:
-      - name: 'message-buffer-wh'
+      - name: message-buffer-wh
         webhook_config:
         - url: http://localhost:9099
 - apiVersion: v1
@@ -205,8 +181,11 @@ objects:
       ALERT Testing
         IF container_fs_usage_bytes{container_name="",instance="vm-48-45.eng.lab.tlv.redhat.com",device="/dev/mapper/vg0-lv_root"} > 4000000000
         ANNOTATIONS {
-          summary = "a summary",
-          description = "a description",
+          source = "ManageIQ",
+          severity = "HIGH",
+          url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+          message = "Node about to explode!",
+          description = "a description"
         }
     prometheus.yml: |
       rule_files:

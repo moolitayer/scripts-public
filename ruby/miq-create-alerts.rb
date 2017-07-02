@@ -1,43 +1,58 @@
 #!/usr/bin/env ruby
 require File.join(Dir.pwd, 'config/environment')
 
-ALERT_UUID="17ac4258-cd1e-11e6-914b-024234304b62"
-MiqAlert.where(:guid => ALERT_UUID).destroy_all # will destroy statuses and action(?) too
-ma = MiqAlert.create!(guid: ALERT_UUID, description: "All hawkular", options: {:notifications=>{:delay_next_evaluation=>600, :evm_event=>{}, :automate=>{:event_name=>"Oh no, an alert"}}}, db: "ContainerNode", expression: {:eval_method=>"hwk_generic", :mode=>"internal", :options=>{}})
-# create new MAS based on the existing ones
 
-ExtManagementSystem.where(:type => "ManageIQ::Providers::Openshift::ContainerManager").each do |ext|
-  mas = MiqAlertStatus.create!(
-    :miq_alert_id          => ma.id,
-    :resource_id           => ext.container_nodes.first.id,
-    :resource_type         => 'ContainerNode',
-    :evaluated_on          => Time.zone.now,
-    :ems_id => ext.id
-  )
+cn = ContainerNode.first
 
-  mas2 = MiqAlertStatus.create!(
-      :miq_alert_id  => ma.id,
-      :resource_id   => ext.container_nodes.second.id,
-      :resource_type => 'ContainerNode',
-      :evaluated_on  => Time.zone.now,
-      :ems_id => ext.id
-  )
+MiqAlertStatus.where(:url => 'www.example.com').destroy_all
 
-  MiqAlertStatusAction.create!(
-    action_type: 'comment', user: User.first, comment: "hello there!", miq_alert_status_id: mas.id
-  )
+MiqAlertStatus.create!(
+  :miq_alert_id => MiqAlert.last.id,
+  :resource_id => cn.id,
+  :resource_type => cn.class.name,
+  :evaluated_on => Time.zone.now,
+  :result => true,
+  :url => 'www.example.com',
+  :severity => 'error',
+  :ems_id => cn.ems_id,
+  :description => "Something went wrong",
+  :resolved => false
+)
+MiqAlertStatus.create!(
+  :miq_alert_id => MiqAlert.last.id,
+  :resource_id => cn.id,
+  :resource_type => cn.class.name,
+  :evaluated_on => Time.zone.now,
+  :result => true,
+  :url => 'www.example.com',
+  :severity => 'info',
+  :ems_id => cn.ems_id,
+  :description => "Something went wrong",
+  :resolved => false
+)
+MiqAlertStatus.create!(
+  :miq_alert_id => MiqAlert.last.id,
+  :resource_id => cn.id,
+  :resource_type => cn.class.name,
+  :evaluated_on => Time.zone.now,
+  :result => true,
+  :url => 'www.example.com',
+  :severity => 'warning',
+  :ems_id => cn.ems_id,
+  :description => "Something went wrong",
+  :resolved => false
+)
 
-  sleep 1
-
-  MiqAlertStatusAction.create!(
-    action_type: 'assign', user: User.first, assignee: User.first, miq_alert_status_id: mas.id
-  )
-
-  sleep 1
-
-  MiqAlertStatusAction.create!(
-    action_type: 'acknowledge', user: User.first, miq_alert_status_id: mas.id
-  )
-
-end
-
+# Should not be visible
+MiqAlertStatus.create!(
+  :miq_alert_id => MiqAlert.last.id,
+  :resource_id => cn.id,
+  :resource_type => cn.class.name,
+  :evaluated_on => Time.zone.now,
+  :result => true,
+  :url => 'www.example.com',
+  :severity => 'error',
+  :ems_id => cn.ems_id,
+  :description => "Something went wrong",
+  :resolved => true
+)
