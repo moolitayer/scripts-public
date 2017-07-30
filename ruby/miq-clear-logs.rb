@@ -5,7 +5,7 @@ require 'fileutils'
   '/home/mtayer/dev/manageiq/log/development.log',
   '/home/mtayer/dev/manageiq/log/policy.log',
   '/home/mtayer/dev/manageiq/log/middleware.log',
-  '/home/mtayer/dev/manageiq/log/monitoring.log',
+  '/home/mtayer/dev/manageiq/log/container_monitoring.log',
   '/home/mtayer/dev/manageiq/log/datawarehouse.log',
   '/home/mtayer/dev/manageiq/log/rhevm.log',
   '/home/mtayer/dev/manageiq/log/api.log',
