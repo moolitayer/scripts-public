@@ -1,0 +1,13 @@
+printf "Openshift Host:\n"
+printf "${OSH_HOST}\n"
+printf "Hawkular Host:\n"
+printf "${HAWKULAR_ROUTE}\n"
+printf "Prometheus Alerts Host:\n"
+printf "${PROMETHEUS_ALERTS_ROUTE}\n"
+printf "Prometheus Metrics Host:\n"
+printf "${PROMETHEUS_METRICS_ROUTE}\n"
+printf "Openshift Console:\n"
+printf "https://${OSH_HOST}:8443/console/\n"
+
+printf "Token:\n"
+printf "${OSH_TOKEN}\n"
