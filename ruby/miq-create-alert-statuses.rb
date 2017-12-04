@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
+ENV['RAILS_ENV'] = ARGV[0] || 'development'
 require File.join(Dir.pwd, 'config/environment')
-
 
 cn = ContainerNode.first
 

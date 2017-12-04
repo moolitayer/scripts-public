@@ -23,7 +23,7 @@ prov = provider_class.new(
                                     :authentication => {:role     => :bearer,
                                                         :auth_key => ENV['OSH_TOKEN']}},
                                    {:endpoint       => {:role       => :prometheus_alerts,
-                                                        :hostname   => ENV['PROMETHEUS_ALERTS_HOST'],
+                                                        :hostname   => ENV['PROMETHEUS_ALERTS_ROUTE'],
                                                         :port       => ENV['PROMETHEUS_ALERTS_PORT'],
                                                         :verify_ssl => false},
                                     :authentication => {:role     => :prometheus_alerts,

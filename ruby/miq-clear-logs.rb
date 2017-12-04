@@ -14,5 +14,5 @@ require 'fileutils'
   '/home/mtayer/dev/manageiq/log/kubernetes.log'
 ].each do |log_file|
   File.open(log_file, 'w') {|file| file.write("")}
-  FileUtils.cp(log_file, '/home/mtayer/Archive/logs')
+  FileUtils.cp(log_file, '/home/mtayer/Downloads/logs')
 end
