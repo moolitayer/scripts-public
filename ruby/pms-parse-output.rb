@@ -18,8 +18,7 @@ messages = []
 keys = []
 nodes = {}
 alerts = {}
-file = File.read(ARGV[0])
-data_hash = JSON.parse(file)
+data_hash = JSON.parse(ARGF.read)
 data_hash["messages"].each do |message|
   indexes << message["index"]
   messages << message["data"]["alerts"].size
