@@ -1,1 +1,1 @@
-curl  -X POST -H "Authorization: Bearer ${OSH_TOKEN}" -k "https://${PROMETHEUS_METRICS_ROUTE}/-/reload"
+curl  -X POST -H "Authorization: Bearer ${OPENSHIFT_MANAGEMENT_ADMIN_TOKEN}" -k "https://${OPENSHIFT_PROMETHEUS_METRICS_ROUTE}/-/reload"

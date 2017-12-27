@@ -27,13 +27,13 @@ POD = {
 
 
 client = Kubeclient::Client.new(
-    "https://#{ENV['OSH_HOST']}:8443/api",
+    "https://#{ENV['OPENSHIFT_MASTER_HOST']}:8443/api",
     'v1',
     ssl_options: {
       verify_ssl: 0
     },
     auth_options: {
-      bearer_token: ENV['OSH_TOKEN']
+      bearer_token: ENV['OPENSHIFT_MANAGEMENT_ADMIN_TOKEN']
     }
 )
 

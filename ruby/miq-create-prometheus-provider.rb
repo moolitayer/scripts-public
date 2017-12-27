@@ -17,17 +17,17 @@ prov = provider_class.new(
     :name                      => "container",
     :zone                      => Zone.last,
     :connection_configurations => [{:endpoint       => {:role       => :default,
-                                                        :hostname   => ENV['OSH_HOST'],
+                                                        :hostname   => ENV['OPENSHIFT_MASTER_HOST'],
                                                         :port       => 8443,
                                                         :verify_ssl => false},
                                     :authentication => {:role     => :bearer,
-                                                        :auth_key => ENV['OSH_TOKEN']}},
+                                                        :auth_key => ENV['OPENSHIFT_MANAGEMENT_ADMIN_TOKEN']}},
                                    {:endpoint       => {:role       => :prometheus_alerts,
-                                                        :hostname   => ENV['PROMETHEUS_ALERTS_ROUTE'],
-                                                        :port       => ENV['PROMETHEUS_ALERTS_PORT'],
+                                                        :hostname   => ENV['OPENSHIFT_PROMETHEUS_ALERTS_ROUTE'],
+                                                        :port       => 443,
                                                         :verify_ssl => false},
                                     :authentication => {:role     => :prometheus_alerts,
-                                                        :auth_key => ENV['OSH_TOKEN']}}
+                                                        :auth_key => ENV['OPENSHIFT_MANAGEMENT_ADMIN_TOKEN']}}
                                   ]
 )
 prov.save
