@@ -1,32 +1,34 @@
 #!/usr/bin/env ruby
 require 'kubeclient'
+require "awesome_print"
 
-POD = {
-  'metadata' => {
-    :name => "nginx",
-    :namespace => "default",
-    :labels => {
-      "name" => "nginx"
+def pod_hash(namespace)
+  {
+    :metadata => {
+      :name => "nginx",
+      :namespace => "#{namespace}",
+      :labels => {
+        "name" => "nginx"
+      },
+      :app => "nginx"
     },
-    :app => "nginx"
-  },
-  :spec => {
-    :containers => [
-      {
-        :name => "nginx",
-        :image => "docker.io/nginx",
-        :ports =>[
-          {
-            :containerPort => 80
-          }
-        ]
-      }
-    ]
+    :spec => {
+      :containers => [
+        {
+          :name => "nginx",
+          :image => "docker.io/nginx",
+          :ports =>[
+            {
+              :containerPort => 80
+            }
+          ]
+        }
+      ]
+    }
   }
-}
+end
 
-
-client = Kubeclient::Client.new(
+cm_client = Kubeclient::Client.new(
     "https://#{ENV['OPENSHIFT_MASTER_HOST']}:8443/api",
     'v1',
     ssl_options: {
@@ -37,20 +39,56 @@ client = Kubeclient::Client.new(
     }
 )
 
-########
-# Core #
-########
-puts client.api_valid?
+client = Kubeclient::Client.new(
+    "http://localhost:8080/api",
+    'v1',
+    auth_options: {
+        # KUBERNETES_LOCAL_DEFAULT_TOKEN=$(oc sa get-token default)
+      bearer_token: ENV['KUBERNETES_LOCAL_DEFAULT_TOKEN']
+    }
+)
+
+namespace = 'kubeclient-ns'
+puts "client.api_valid?: #{cm_client.api_valid?}"
+
+# Delete NS if exists
+begin
+  ns = cm_client.get_namespace(namespace)
+  puts 'exists, deleting'
+  ns = cm_client.delete_namespace(namespace)
+  while true do
+    ns = cm_client.get_namespace(namespace)
+    ap ns
+    sleep(1)
+  end
+rescue Kubeclient::ResourceNotFoundError
+  puts 'does not exists'
+end
+
+# create NS
+testing_ns = Kubeclient::Resource.new
+testing_ns.metadata = {}
+testing_ns.metadata.name = namespace
+puts 'hi'
+ns = cm_client.create_namespace(testing_ns)
+puts 'bye'
+
+pod = cm_client.create_pod(pod_hash(namespace))
+ap pod
+
 exit
-pod = client.get_pod('nginx', 'default')
+
+pod = cm_client.get_pod('nginx', NS)
+puts pod
+puts "pod: #{pod} pod.class: #{pod.class}"
 puts 'update....'
 pod.metadata.labels[:puku] = 'kuku'
-ret = client.update_pod(pod)
+ret = cm_client.update_pod(pod)
 puts "ret: #{ret} ret.class: #{ret.class} ret.body: #{ret.body}"
+
 puts 'delete.....'
 client.delete_pod('nginx', 'default')
 
-exit
 
 nodes = client.get_nodes
 begin

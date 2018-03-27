@@ -1,5 +1,5 @@
 gem uninstall --ignore-dependencies --all kubeclient
 rake build
-gem install pkg/kubeclient-2.3.0.gem
+gem install pkg/kubeclient*
 # run other tests based on development gem
 kubeclient-local.rb

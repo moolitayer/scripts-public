@@ -1,0 +1,2 @@
+echo "ERROR STREAM" >&2
+echo "OUTPUT STREAM"
