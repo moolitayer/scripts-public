@@ -29,7 +29,8 @@ def pod_hash(namespace)
 end
 
 cm_client = Kubeclient::Client.new(
-    "https://#{ENV['OPENSHIFT_MASTER_HOST']}:8443/api",
+    # "https://#{ENV['OPENSHIFT_MASTER_HOST']}:8443/api",
+    "https://#{ENV['OPENSHIFT_MASTER_HOST']}:8443/apis/authorization.k8s.io",
     'v1',
     ssl_options: {
       verify_ssl: 0
@@ -52,7 +53,7 @@ namespace = 'kubeclient-ns'
 puts "client.api_valid?: #{cm_client.api_valid?}"
 
 # Delete NS if exists
-begin
+def delete_ns
   ns = cm_client.get_namespace(namespace)
   puts 'exists, deleting'
   ns = cm_client.delete_namespace(namespace)
@@ -65,17 +66,28 @@ rescue Kubeclient::ResourceNotFoundError
   puts 'does not exists'
 end
 
-# create NS
-testing_ns = Kubeclient::Resource.new
-testing_ns.metadata = {}
-testing_ns.metadata.name = namespace
-puts 'hi'
-ns = cm_client.create_namespace(testing_ns)
-puts 'bye'
+def create_ns
+  # create NS
+  testing_ns = Kubeclient::Resource.new
+  testing_ns.metadata = {}
+  testing_ns.metadata.name = namespace
+  puts 'hi'
+  ns = cm_client.create_namespace(testing_ns)
+  puts 'bye'
+end
 
-pod = cm_client.create_pod(pod_hash(namespace))
-ap pod
+res = Kubeclient::Resource.new
+res.metadata = {}
+res.metadata.namespace = 'default'
+res.spec = {}
+res.spec.user = 'admin'
+res.spec.resourceAttributes = {}
+res.spec.resourceAttributes.namespace = 'default'
+res.spec.resourceAttributes.name = 'whatever'
+res.spec.resourceAttributes.verb = 'create'
+res.spec.resourceAttributes.resource = 'services'
 
+puts cm_client.create_local_subject_access_review(res)
 exit
 
 pod = cm_client.get_pod('nginx', NS)

@@ -1,5 +1,5 @@
-OUT=$(
 cat <<EOF |./output.sh 2>&1
+OUT=$(
 aaa
 EOF
 )
