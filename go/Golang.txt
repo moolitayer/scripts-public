@@ -1,0 +1,57 @@
+### Redeclaration and reassignment
+```
+f, err := os.Open(name)
+if err != nil {
+    return err
+}
+d, err := f.Stat()
+if err != nil {
+    f.Close()
+    return err
+}
+codeUsing(f, d)
+```
+
+### parallel assignment
+Go lang// Reverse a
+```
+for i, j := 0, len(a)-1; i < j; i, j = i+1, j-1 {
+    a[i], a[j] = a[j], a[i]
+}
+```
+
+if the switch has no expression it switches on true
+
+Break loop:
+``` 
+ Loop:
+ ...
+      break Loop
+```
+
+Type switch
+
+- arguments to deferred functions are evaluated when the defer executes
+
+- new(T) allocates zeroed storage for a new item of type T and returns its address
+
+- Since the memory returned by new is zeroed, it's helpful to arrange when designing
+your data structures that the zero value of each type can be used without further initialization
+
+- 
+```
+p := new(SyncedBuffer)  // type *SyncedBuffer
+var v SyncedBuffer      // type  SyncedBuffer
+```
+
+- It's perfectly OK to return the address of a local variable
+
+- ?
+```
+a := [...]string   {Enone: "no error", Eio: "Eio", Einval: "invalid argument"}
+s := []string      {Enone: "no error", Eio: "Eio", Einval: "invalid argument"}
+m := map[int]string{Enone: "no error", Eio: "Eio", Einval: "invalid argument"}
+```
+
+- new(T). It creates slices, maps, and channels only, and it returns an
+initialized (not zeroed) value of type T (not *T).
