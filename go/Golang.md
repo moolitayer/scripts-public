@@ -124,3 +124,19 @@ for i := range picture {
 	picture[i], pixels = pixels[:XSize], pixels[XSize:]
 }
 ```
+
+- slices cannot be used as map keys, because equality is not defined on them
+
+- To delete a map entry, use the delete built-in function, whose arguments are the map and the key to be deleted. It's safe to do this even if the key is already absent from the map.
+
+```
+delete(timeZone, "PDT")  // Now on Standard Time
+```
+
+- We write ... after v in the nested call to Sprintln to tell the compiler to treat v as a list of arguments; otherwise it would just pass v as a single slice argument:
+```
+// Println prints to the standard logger in the manner of fmt.Println.
+func Println(v ...interface{}) {
+    std.Output(2, fmt.Sprintln(v...))  // Output takes parameters (int, string)
+}
+```
