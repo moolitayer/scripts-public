@@ -140,3 +140,63 @@ func Println(v ...interface{}) {
     std.Output(2, fmt.Sprintln(v...))  // Output takes parameters (int, string)
 }
 ```
+
+Constants are created at compile time, even when defined as locals in functions, and can only be numbers, characters (runes), strings or booleans
+
+- In Go, enumerated constants are created using the iota enumerator. Since iota can be part of an expression and expressions can be implicitly repeated, it is easy to build intricate sets of values.
+```
+type ByteSize float64
+
+const (
+    _           = iota // ignore first value by assigning to blank identifier
+    KB ByteSize = 1 << (10 * iota)
+    MB
+    GB
+    TB
+    PB
+    EB
+    ZB
+    YB
+)
+
+func (b ByteSize) String() string {
+    switch {
+    case b >= YB:
+        return fmt.Sprintf("%.2fYB", b/YB)
+    case b >= ZB:
+        return fmt.Sprintf("%.2fZB", b/ZB)
+    case b >= EB:
+        return fmt.Sprintf("%.2fEB", b/EB)
+    case b >= PB:
+        return fmt.Sprintf("%.2fPB", b/PB)
+    case b >= TB:
+        return fmt.Sprintf("%.2fTB", b/TB)
+    case b >= GB:
+        return fmt.Sprintf("%.2fGB", b/GB)
+    case b >= MB:
+        return fmt.Sprintf("%.2fMB", b/MB)
+    case b >= KB:
+        return fmt.Sprintf("%.2fKB", b/KB)
+    }
+    return fmt.Sprintf("%.2fB", b)
+}
+```
+
+- init is called after all the variable declarations in the package have evaluated their initializers, and those are evaluated only after all the imported packages have been initialized.
+
+```
+func (p *ByteSlice) Write(data []byte) (n int, err error) {
+    slice := *p
+    // Again as above.
+    *p = slice
+    return len(data), nil
+}
+```
+
+then the type *ByteSlice satisfies the standard interface io.Writer, which is handy. For instance, we can print into one.
+```
+    var b ByteSlice
+    fmt.Fprintf(&b, "This hour has %d days\n", 7)
+```
+
+- The rule about pointers vs. values for receivers is that value methods can be invoked on pointers and values, but pointer methods can only be invoked on pointers(other wise the return value would be discarded since they get a copy of the object).
