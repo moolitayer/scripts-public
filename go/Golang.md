@@ -200,3 +200,29 @@ then the type *ByteSlice satisfies the standard interface io.Writer, which is ha
 ```
 
 - The rule about pointers vs. values for receivers is that value methods can be invoked on pointers and values, but pointer methods can only be invoked on pointers(other wise the return value would be discarded since they get a copy of the object).
+
+- Conversions
+```
+func (s Sequence) String() string {
+    sort.Sort(s)
+    return fmt.Sprint([]int(s))
+}
+```
+- Type Conversion
+```
+type Stringer interface {
+    String() string
+}
+
+var value interface{} // Value provided by caller.
+switch str := value.(type) {
+case string:
+    return str
+case Stringer:
+    return str.String()
+}
+```
+- Type assersion
+```
+value.(typeName)
+```
