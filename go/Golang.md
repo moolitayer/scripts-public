@@ -23,7 +23,7 @@ for i, j := 0, len(a)-1; i < j; i, j = i+1, j-1 {
 if the switch has no expression it switches on true
 
 Break loop:
-``` 
+```
  Loop:
  ...
       break Loop
@@ -38,7 +38,7 @@ Type switch
 - Since the memory returned by new is zeroed, it's helpful to arrange when designing
 your data structures that the zero value of each type can be used without further initialization
 
-- 
+-
 ```
 p := new(SyncedBuffer)  // type *SyncedBuffer
 var v SyncedBuffer      // type  SyncedBuffer
@@ -83,7 +83,7 @@ array := [...]float64{7.0, 8.5, 9.1}
 x := Sum(&array)  // Note the explicit address-of operator
 ```
 
-- Slices hold references to an underlying array, and if you assign one slice to another, both refer to the same array. 
+- Slices hold references to an underlying array, and if you assign one slice to another, both refer to the same array.
     n, err := f.Read(buf[0:32])
 
 - We must return the slice afterwards because, although Append can modify the elements of slice, the slice itself (the run-time data structure holding the pointer, length, and capacity) is passed by value:
@@ -226,3 +226,26 @@ case Stringer:
 ```
 value.(typeName)
 ```
+
+- If a type exists only to implement an interface the constructor should return an interface value rather than the implementing type.
+
+- A function can implement an interface:
+```
+// The HandlerFunc type is an adapter to allow the use of
+// ordinary functions as HTTP handlers.  If f is a function
+// with the appropriate signature, HandlerFunc(f) is a
+// Handler object that calls f.
+type HandlerFunc func(ResponseWriter, *Request)
+
+// ServeHTTP calls f(w, req).
+func (f HandlerFunc) ServeHTTP(w ResponseWriter, req *Request) {
+    f(w, req)
+}
+```
+
+- To guarantee that the implementation is correct, a global declaration using the blank identifier can be used in the package:
+```
+var _ json.Marshaler = (*RawMessage)(nil)
+```
+???
+https://golang.org/doc/effective_go.html#blank_implements (end)

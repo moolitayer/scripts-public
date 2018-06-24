@@ -1,0 +1,6 @@
+-i     When  a  script  is passed as first argument or the -c option is used, enter interactive mode after executing
+       the script or the command.  It does not read the $PYTHONSTARTUP file.  This can be useful to  inspect  global
+       variables or a stack trace when a script raises an exception.
+-I     Run  Python  in  isolated  mode.  This also implies -E and -s. In isolated mode sys.path contains neither the
+      script's directory nor the user's site-packages directory. All PYTHON*  environment  variables  are  ignored,
+      too.  Further restrictions may be imposed to prevent the user from injecting malicious code.
