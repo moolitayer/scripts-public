@@ -1,3 +1,8 @@
+BUCKET=GeneralBacku
+BBZ_ACCOUNT_ID=fe576cdc21c5
+duplicity /media/moolit/backups/Long.mpg  "b2://${BBZ_ACCOUNT_ID}:${BBZ_APPLICATION_KEY}@[$BUCKET]"
+
+
 b2 authorize-account $BBZ_ACCOUNT_ID $BBZ_APPLICATION_KEY
 b2 upload-file --contentType "image/jpeg" GeneralBacku ~/Wedding/uploaded/Shir\ \&\ Moly-3418.jpg "3418"
 b2 list-file-names GeneralBacku
